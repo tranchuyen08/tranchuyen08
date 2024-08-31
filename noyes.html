@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tớ Tệ phải không?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            overflow: hidden; /* Để đảm bảo trái tim rơi không bị cuộn */
+            position: relative; /* Để đặt ảnh nền phía dưới các thành phần khác */
+            height: 100vh; /* Đảm bảo body chiếm toàn bộ chiều cao màn hình */
+            width: 100vw; /* Đảm bảo body chiếm toàn bộ chiều rộng màn hình */
+            background-image: url('https://i.pinimg.com/originals/e0/9e/cc/e09ecc13730638c5026e1ece3fbb7172.jpg'); /* Ảnh nền */
+            background-size: cover; /* Đảm bảo ảnh nền bao phủ toàn bộ trang */
+            background-position: center; /* Căn giữa ảnh nền */
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* Nền trắng bán trong suốt */
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 100px;
+            position: relative; /* Để nút "Có" di chuyển trong phạm vi container */
+        }
+        img {
+            max-width: 200px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            color: #ff69b4;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-co {
+            background-color: #ff1493;
+            color: white;
+        }
+        .btn-co:hover {
+            background-color: #ff69b4;
+            transform: scale(1.1); /* Tăng kích thước nút khi di chuột qua */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn-khong {
+            background-color: #87ceeb;
+            color: white;
+        }
+        .btn-khong:hover {
+            background-color: #00bfff;
+            transform: scale(1.1); /* Tăng kích thước nút khi di chuột qua */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Trái tim rơi */
+        .snowflake {
+            position: absolute;
+            color: #ff1493; /* Màu trái tim */
+            font-size: 24px; /* Kích thước trái tim */
+            user-select: none;
+            pointer-events: none;
+            z-index: 1000;
+            font-family: 'Arial', sans-serif; /* Đảm bảo hiển thị trái tim */
+        }
+
+        /* Popup */
+        .popup {
+            display: none; /* Ẩn popup mặc định */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Nền mờ đen */
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+        .popup-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            width: 80%;
+            max-width: 500px;
+            animation: fadeIn 0.5s ease;
+        }
+        .popup-content h2 {
+            color: #ff69b4;
+            margin-bottom: 20px;
+        }
+        .popup-content img {
+            max-width: 100%;
+            height: auto; /* Đảm bảo ảnh không bị méo */
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        .popup-content button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff1493;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .popup-content button:hover {
+            background-color: #ff69b4;
+        }
+
+        /* Menu Button */
+        .menu {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1002;
+        }
+
+        /* Popup Menu */
+        .popup-menu {
+            display: none; /* Ẩn popup menu mặc định */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            z-index: 1003;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto; /* Để cuộn nếu nội dung quá dài */
+            animation: fadeIn 0.5s ease; /* Hiệu ứng chuyển động khi mở menu */
+        }
+        .popup-menu.show {
+            display: flex;
+            animation: slideIn 0.5s ease;
+        }
+        .popup-menu-content {
+            background-color: #444; /* Nền tối hơn cho nội dung menu */
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            width: 90%;
+            max-width: 600px; /* Mở rộng kích thước tối đa của nội dung menu */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+        }
+        .popup-menu-content img {
+            width: 100px; /* Giảm kích thước của logo */
+            height: auto;
+            border-radius: 50%;
+            display: block;
+            margin: 0 auto 20px;
+        }
+        .popup-menu-content h2 {
+            margin-top: 0;
+            font-size: 28px; /* Kích thước tiêu đề lớn hơn */
+        }
+        .popup-menu-content p {
+            font-size: 18px; /* Kích thước chữ mô tả lớn hơn */
+        }
+        .popup-menu-content a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 15px;
+            font-size: 18px;
+            transition: color 0.3s, text-decoration 0.3s;
+        }
+        .popup-menu-content a:hover {
+            color: #ff69b4; /* Màu chữ thay đổi khi hover */
+            text-decoration: underline;
+        }
+        .popup-menu-content button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff1493;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .popup-menu-content button:hover {
+            background-color: #ff69b4;
+            transform: scale(1.05); /* Tăng kích thước nút khi hover */
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Âm thanh -->
+    <audio id="sound-effect" src="https://www.myinstants.com/media/sounds/mac-quack.mp3"></audio>
+    <audio id="sound-effect-no" src="https://www.myinstants.com/media/sounds/ding-sound-effect_1.mp3"></audio>
+    <audio id="popup-sound" src="https://www.myinstants.com/media/sounds/popup-sound.mp3"></audio> <!-- Âm thanh khi popup xuất hiện -->
+
+    <!-- Nút menu -->
+    <div class="menu" id="menu">&#9776;</div>
+
+    <!-- Popup Menu -->
+    <div id="popup-menu" class="popup-menu">
+        <div class="popup-menu-content">
+            <img src="https://scontent.fhan5-5.fna.fbcdn.net/v/t39.30808-6/425438345_366267233007358_3192181496662022716_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=HV0KWt07dsMQ7kNvgGTppIH&_nc_ht=scontent.fhan5-5.fna&oh=00_AYA5cQoS41jU_E8PKccL_xzgsP3-z1NGZNfNltEWdaQs0A&oe=66D92925" alt="Logo">
+            <h2>Giới thiệu</h2>
+            <p>Trang web vô tri!!.</p>
+            <p> CODE BY TRANCHUYEN</p>
+            <p>Liên hệ:</p>
+            <a href="https://www.facebook.com/tranchyn.08/" target="_blank">Facebook</a>
+            <a href="https://glitch.com/edit/#!/pie-rhinestone-pencil" target="_blank">Source Code</a>
+            <button id="close-popup-menu">Đóng</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <img src="https://i.pinimg.com/736x/71/01/c6/7101c6fdcb5a7ab87bd565410f17be2d.jpg" alt="Ảnh đáng yêu">
+        <h1>Tớ Tệ phải không?</h1>
+        <button class="btn-co" id="btn-co">Có</button>
+        <button class="btn-khong" id="btn-khong">Không</button>
+    </div>
+
+    <!-- Popup -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <img src="https://gallery.yopriceville.com/var/resizes/Free-Clipart-Pictures/Hearts-PNG/Pink_Heart_PNG_Deco_Clipart.png?m=1629832371" alt="Thông báo hình ảnh">
+            <h2>Tớ biết tớ không tệ mà!</h2>
+            <button id="close-popup">Đóng</button>
+        </div>
+    </div>
+
+    <script>
+        const btnCo = document.getElementById('btn-co');
+        const btnKhong = document.getElementById('btn-khong');
+        const popup = document.getElementById('popup');
+        const closePopup = document.getElementById('close-popup');
+        const soundEffect = document.getElementById('sound-effect');
+        const soundEffectNo = document.getElementById('sound-effect-no');
+        const popupSound = document.getElementById('popup-sound');
+        const menu = document.getElementById('menu');
+        const popupMenu = document.getElementById('popup-menu');
+        const closePopupMenu = document.getElementById('close-popup-menu');
+
+        // Hàm để di chuyển nút "Có" đến vị trí ngẫu nhiên trong phạm vi container
+        function moveButton() {
+            const container = document.querySelector('.container');
+            const x = Math.floor(Math.random() * (container.clientWidth - btnCo.offsetWidth));
+            const y = Math.floor(Math.random() * (container.clientHeight - btnCo.offsetHeight));
+            btnCo.style.position = 'absolute';
+            btnCo.style.left = `${x}px`;
+            btnCo.style.top = `${y}px`;
+        }
+
+        // Xử lý sự kiện khi người dùng nhấp vào nút "Có"
+        btnCo.addEventListener('click', () => {
+            moveButton();
+            soundEffect.play().catch(error => console.log("Âm thanh nút 'Có' không phát:", error));
+        });
+
+        // Xử lý sự kiện khi người dùng nhấp vào nút "Không"
+        btnKhong.addEventListener('click', () => {
+            soundEffectNo.play().catch(error => console.log("Âm thanh nút 'Không' không phát:", error));
+            popupSound.play().catch(error => console.log("Âm thanh popup không phát:", error));
+            popup.style.display = 'flex'; // Hiển thị popup
+        });
+
+        // Xử lý sự kiện khi người dùng nhấp vào nút "Đóng" trong popup
+        closePopup.addEventListener('click', () => {
+            popup.style.display = 'none'; // Ẩn popup
+        });
+
+        // Tạo hiệu ứng trái tim rơi
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.textContent = '❤️'; // Thay đổi ký tự thành trái tim
+            snowflake.style.left = `${Math.random() * window.innerWidth}px`;
+            snowflake.style.top = `-50px`;
+            document.body.appendChild(snowflake);
+
+            // Animation cho trái tim rơi
+            const duration = Math.random() * 3 + 2; // Thời gian rơi từ 2 đến 5 giây
+            snowflake.style.transition = `top ${duration}s linear`;
+            setTimeout(() => {
+                snowflake.style.top = `${window.innerHeight + 50}px`;
+            }, 10);
+
+            // Xóa trái tim khi đã rơi hết
+            snowflake.addEventListener('transitionend', () => {
+                snowflake.remove();
+            });
+        }
+
+        setInterval(createSnowflake, 100); // Tạo trái tim rơi liên tục
+
+        // Xử lý sự kiện khi nhấp vào nút menu
+        menu.addEventListener('click', () => {
+            popupMenu.classList.add('show');
+            popupSound.play().catch(error => console.log("Âm thanh popup không phát:", error));
+        });
+
+        // Xử lý sự kiện khi nhấp vào nút "Đóng" trong popup menu
+        closePopupMenu.addEventListener('click', () => {
+            popupMenu.classList.remove('show'); // Ẩn popup menu
+        });
+    </script>
+</body>
+</html>
+
